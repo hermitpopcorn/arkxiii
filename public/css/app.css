@@ -1,0 +1,170 @@
+ul {
+	list-style-type:none;
+}
+
+ul.dashlist {
+	list-style-type:circle;
+}
+ul.dashlist li {
+	margin-bottom:1rem;
+}
+
+.logo {
+	width:60%;
+	max-width:250px;
+	height:auto;
+	margin-top:1em;
+	margin-bottom:1em;
+}
+
+.top-bar img {
+	width:30px;
+	height:30px;
+	margin-right:0.3em;
+}
+
+.sidebar {
+	background-color:#333;
+	color:white;
+	width:9rem;
+	height:100%;
+	position:fixed;
+	padding:1em 0;
+	font-size:0.9em;
+}
+.sidebar a {
+	color:white;
+}
+.sidebar li {
+	padding:0.5em 1em;
+	margin-bottom:0.2em;
+}
+.sidebar li.active {
+	background:#43AC6A;
+}
+.sidebar li:hover, li:focus {
+	background:#008CBA;
+}
+.sidebar li.red:hover, li.red:focus {
+	background:#CF2A0E;
+}
+.sidebar li i {
+	font-size:1.1em;
+	margin-right:8px;
+}
+.sidebar hr {
+	margin:0.5em;
+	border-color:#393939;
+}
+
+.container {
+	background-color:#333;
+}
+
+.content {
+	background-color:#FFFFFF;
+	margin-left:9rem;
+	padding:1em;
+}
+
+.navbuttons.row {
+	margin-bottom:1.25rem;
+}
+.navbuttons .button {
+	margin-bottom:0.25rem;
+	padding:1rem;
+}
+
+h2 {
+	border-bottom:1px solid #eee;
+}
+
+.alert-box .alert-icon {
+	font-size:1.5em;
+	vertical-align:middle;
+	margin-right:0.2em;
+}
+.alert-box .alert-text {
+	font-size:1rem;
+	font-weight:bold;
+	vertical-align:middle;
+}
+
+table.expand {
+	width:100%;
+}
+
+ul.pagination {
+	display:inline-block;
+	border:1px solid #CCC;
+	padding:0.5em;
+	border-left:none; border-right:none;
+}
+
+.corner-loading-indicator {
+	position:fixed;
+	top:0; right:0;
+	font-size:4em;
+	color:#fff;
+	margin:0.5em;
+	background-color:rgba(0,0,0,0.5);
+	padding:0.5em;
+	border-radius:10px;
+	visibility:hidden;
+	z-index:999;
+}
+
+.panel.error {
+	background:#FFC1C1 none repeat scroll 0% 0%;
+}
+.panel.warning {
+	background:#FBEEA8 none repeat scroll 0% 0%;
+}
+.panel.green {
+	background:#F0FFEC none repeat scroll 0% 0%;
+}
+
+form.align-left .row {
+	margin-left:0;
+	margin-right:0;
+}
+
+footer {
+	padding:0.5em 1em;
+	border-top:1px solid #CCC;
+	font-size:0.8em;
+	text-align:right;
+	margin-top:2rem;
+}
+
+.nobr {
+	white-space:nowrap;
+}
+
+/* Small screens */
+@media only screen {
+}
+
+/* Small screens only */
+@media only screen and (max-width: 40em) {
+	.sidebar {
+		display:none;
+	}
+	.content {
+		margin-left:0;
+	}
+}
+
+/* Medium screens */
+@media only screen and (min-width: 40.063em) { }
+
+/* Medium screens only */
+@media only screen and (min-width: 40.063em) and (max-width: 64em) { }
+
+/* Large screens */
+@media only screen and (min-width: 64.063em) {
+	.row {
+		margin-left:0;
+		margin-right:0;
+	}
+}

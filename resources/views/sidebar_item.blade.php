@@ -1,0 +1,1 @@
+<a href='{{ route($route) }}'><li class='{{ explode('/', Route::getCurrentRoute()->getPath(), 2)[0] == $route ? 'active' : '' }}'><i class="fa fa-{{$icon}}" style='width:1em;text-align:center'></i> {{$label}}</li></a>
