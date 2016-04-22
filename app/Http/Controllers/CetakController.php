@@ -61,7 +61,7 @@ class CetakController extends Controller
         else {
             return back();
         }
-        
+
         if(count($siswa_to_print) < 1) {
             return back()->with('message', "Tidak ada data untuk dicetak.");
         }
@@ -70,11 +70,11 @@ class CetakController extends Controller
         $mapel_list = null;
         foreach($siswa_to_print as $siswa) {
             if($siswa->id_kelas == null) { continue; }
-            
+
             if(!Semester::is_active_latest()) {
                 $siswa->kelas_link->tingkat -= Semester::get_year_difference();
             }
-            
+
             if($request->input('cover')) {
                 $docObj = $this->wordHalamanCover($docObj, $siswa);
                 $docObj = $this->wordHalamanDataSekolah($docObj, $schDetails);
@@ -87,7 +87,7 @@ class CetakController extends Controller
                     $id_kelas = $siswa->id_kelas;
                     $mapel_list = NilaiAkhir::get_mapel_list($id_kelas);
                 }
-                
+
                 $sikap = NilaiSikap::get_nilai($siswa->id);
                 $nilai['sikap'] = $sikap ? $sikap->sikap : "";
                 $nilai['mapel'] = NilaiAkhir::get_all_nilai($siswa, $mapel_list);
@@ -116,7 +116,7 @@ class CetakController extends Controller
             $fn .= "_" . $nis_array[0] . '-' . $nis_array[count($nis_array)-1];
         }
         $objWriter->save("print/{$fn}.docx");
-        
+
         return Response::download("print/{$fn}.docx", "{$fn}.docx", ['Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document']);
     }
 
@@ -131,9 +131,9 @@ class CetakController extends Controller
         $section->addText('Rapor Siswa', $fStyle, $pStyle);
         $section->addText('Sekolah Menengah Kejuruan', $fStyle, $pStyle);
         $section->addText('(SMK)', $fStyle, $pStyle);
-        
+
         $section->addTextBreak(3);
-        
+
         $section->addImage(
             '../resources/assets/images/tutwurihandayani.jpg',
             array(
@@ -156,14 +156,14 @@ class CetakController extends Controller
         $nameCell->addText($subject->nama, array('name' => 'Times New Roman', 'size' => '16', 'bold' => true, 'allCaps' => true), array('align' => 'center', 'spaceBefore' => 120, 'spaceAfter' => 120));
 
         $section->addTextBreak(2);
-        
+
         $section->addText('NISN:', array('name' => 'Times New Roman', 'size' => 14, 'bold' => true), array('align' => 'center', 'spaceAfter' => 240));
 
         $name = $section->addTable(array('borderColor' => '000000', 'borderSize' => 1, 'align' => 'center', 'width' => 100));
         $name->addRow(Converter::cmToPixel(1.5));
         $nameCell = $name->addCell(Converter::cmToTwip(14.5));
         $nameCell->addText($subject->nisn, array('name' => 'Times New Roman', 'size' => '16', 'bold' => true, 'allCaps' => true), array('align' => 'center', 'spaceBefore' => 120, 'spaceAfter' => 120));
-        
+
         $section->addTextBreak(3);
 
         $fStyle = array('name' => 'Times New Roman', 'size' => 16, 'bold' => true, 'allCaps' => true);
@@ -227,7 +227,7 @@ class CetakController extends Controller
         $section->addText(htmlspecialchars("Provinsi\t:\t".$schDetails['provinsi']), $fStyle, 'Detail Sekolah');
         $section->addText(htmlspecialchars("Website\t:\t".$schDetails['website']), $fStyle, 'Detail Sekolah');
         $section->addText(htmlspecialchars("Email\t:\t".$schDetails['email']), $fStyle, 'Detail Sekolah');
-        
+
         return $docObj;
     }
 
@@ -305,9 +305,9 @@ class CetakController extends Controller
         $imgTable = $cell->addTable(array('borderSize' => 2, 'borderColor' => '000000'));
         $imgTable->addRow(Converter::cmToTwip(4), array('exactHeight' => true));
         $cell = $imgTable->addCell(Converter::cmToTwip(3), array('width' => Converter::cmToTwip(3)));
-        if(file_exists('../resources/assets/images/pasfotosiswa/'.$siswa->id.'.bmp')) {
+        if(file_exists(base_path('resources/assets/images/pasfotosiswa/'.$siswa->id.'.jpg'))) {
             $cell->addImage(
-                '../resources/assets/images/pasfotosiswa/'.$siswa->id.'.bmp',
+                base_path('/resources/assets/images/pasfotosiswa/'.$siswa->id.'.jpg'),
                 array(
                     'width' => Converter::cmToPixel(3),
                     'height' => Converter::cmToPixel(4),
@@ -332,16 +332,16 @@ class CetakController extends Controller
 
         return $docObj;
     }
-    
+
     public function wordHalamanNilai($docObj, $sekolah, $siswa, $dataRapor, $headmaster, $printLocDate, $semester)
     {
         $section = $docObj->addSection(['orientation' => 'landscape']);
-        
+
         $fStyle = array('name' => 'Times New Roman', 'size' => 11);
         $boldFStyle = array_merge($fStyle,['bold'=>true]);
 
         $pStyle = ['align' => 'left', 'spaceAfter' => 60, 'spaceBefore' => 0];
-        
+
         $docObj->addParagraphStyle(
             'Bio Nilai',
             array(
@@ -369,7 +369,7 @@ class CetakController extends Controller
             ],
             'keepNext' => true
         ];
-        
+
         $section->addText("Nama Sekolah\t: ".$sekolah['nama_sekolah']."\tKelas\t: ".$siswa->kelas_link->name(false), $fStyle, 'Bio Nilai');
         $alamat = str_limit(explode("\n", $sekolah['alamat_sekolah'])[0], 32, '');
         $semText = $semester->semester;
@@ -665,7 +665,7 @@ class CetakController extends Controller
         $section->addText(" ", $fStyle, ['keepNext' => true, 'spaceAfter' => 30]);
         $section->addText("\t".$headmaster['kepala_sekolah.nama'], $fStyle, array_merge(['keepNext' => true, 'spaceAfter' => 30], $tabs));
         $section->addText("\tNIP. ".$headmaster['kepala_sekolah.nip'], $fStyle, array_merge(['keepNext' => true, 'spaceAfter' => 30], $tabs));
-        
+
         return $docObj;
     }
 

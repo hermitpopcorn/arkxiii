@@ -10,8 +10,16 @@ class Prestasi extends Model
 {
     protected $table = 'nilai_prestasi';
 
-    public static function get_table_data()
+    public static function get_table_data($request = null)
     {
+        $semester = Semester::get_active_semester()->id;
+
+        if($request != null) {
+            if($request->input('semester')) {
+                $semester = $request->input('semester');
+            }
+        }
+
         $data = self::select(DB::raw("
             siswa.nis as `NIS`,
             siswa.nama as `Nama`, nilai_prestasi.prestasi as `Prestasi`,
@@ -19,7 +27,7 @@ class Prestasi extends Model
             nilai_prestasi.id as `id`
         "))
         ->join('siswa', 'siswa.id', '=', 'nilai_prestasi.id_siswa')
-        ->where('id_semester', Semester::get_active_semester()->id)
+        ->where('id_semester', $semester)
         ->get()->toArray();
 
         return ['data' => $data];

@@ -33,7 +33,7 @@ class PklController extends Controller
         $this->validate($request, [
             'id_siswa' => 'required|exists:siswa,id'
         ]);
-        
+
         $data = Pkl::get_all_catatan($request->input('id_siswa'));
 
         $siswa = Siswa::find($request->input('id_siswa'));
@@ -55,24 +55,27 @@ class PklController extends Controller
 
         return ['data' => $tbody, 'siswa' => $siswa->nama];
     }
-    
+
     public function detail(Request $request)
     {
         if (!$request->ajax()) { abort(404); }
-        
+
         $this->validate($request, [
             'id_siswa' => 'required|exists:siswa,id',
             'mitra' => 'required|exists:pkl,mitra',
             'lokasi' => 'required|exists:pkl,lokasi'
         ]);
-        
-        $catatan = Pkl::get_catatan($request->input('id_siswa'), $request->input('mitra'), $request->input('lokasi'));
-        
+
+        $catatan = Pkl::get_catatan($request->input('id_siswa'), $request->input('mitra'), $request->input('lokasi'), $request->input('id_semester'));
+        $siswa = Siswa::find($request->input('id_siswa'));
+
+        $detail['nis'] = $siswa->nis;
+        $detail['nama'] = $siswa->nama;
         $detail['mitra'] = $catatan->mitra;
         $detail['lokasi'] = $catatan->lokasi;
         $detail['lama'] = $catatan->lama;
         $detail['keterangan'] = $catatan->keterangan;
-        
+
         return json_encode($detail);
     }
 
@@ -98,7 +101,7 @@ class PklController extends Controller
         }
 
         $new = new Pkl();
-        
+
         $new->mitra = $request->input('mitra');
         $new->lokasi = $request->input('lokasi');
         $new->lama = $request->input('lama');
@@ -163,7 +166,7 @@ class PklController extends Controller
             $objReader = PHPExcel_IOFactory::createReader($inputFileType);
             $objPHPExcel = $objReader->load($inputFileName);
         } catch (Exception $e) {
-            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) 
+            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME)
             . '": ' . $e->getMessage());
         }
 
@@ -201,7 +204,7 @@ class PklController extends Controller
                 } else {
                     if($id_siswa == null) { continue; }
                 }
-                
+
                 $created = null;
                 $check = Pkl::where('mitra', $rowData[0][3])->where('lokasi', $rowData[0][4])->where('id_siswa', $id_siswa)->where('id_semester', $semester);
                 $old = $check->first();
@@ -211,7 +214,7 @@ class PklController extends Controller
                 }
 
                 $new = new Pkl();
-                
+
                 $new->mitra = $rowData[0][3];
                 $new->lokasi = $rowData[0][4];
                 $new->lama = $rowData[0][5];

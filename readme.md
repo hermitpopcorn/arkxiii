@@ -10,3 +10,9 @@ Aplikasi yang bertujuan untuk membantu staf TU di sekolah untuk mencatat, mengum
 ## Spek Minimum Client
 - Antarmuka aplikasi sangat bergantung pada JavaScript, maka disarankan menggunakan browser Mozilla Firefox atau Chrome versi terbaru
 - Resolusi layar dengan lebar setidaknya 800px
+
+## Petunjuk
+- Gunakan migrasi untuk meng-install struktur database
+- Ubah konfigurasi pada config/
+- Beri permission pada direktori storage/, resources/assets/images/pasfotosiswa/, dan public/print/
+- User default menggunakan username "000" dan password "000".

@@ -99,7 +99,7 @@
 <div id="deleteModal" class="reveal-modal" data-reveal aria-labelledby="deleteTitle" aria-hidden="true" role="dialog">
     <h2 id="deleteTitle">Hapus Kelas</h2>
     <p id="details"></p>
-    <p>Anda yakin ingin menghapus pelajaran ini dari database?</p>
+    <p>Anda yakin ingin menghapus kelas ini dari database?</p>
     <p><b>Peringatan</b>: Kelas tidak dapat dihapus jika di dalamnya memiliki siswa.</p>
     <a href="javascript:hapusReal(idHapus)" class="button">Hapus</a>
     <a onClick="$('#deleteModal').foundation('reveal', 'close')" class="secondary button">Batal</a>

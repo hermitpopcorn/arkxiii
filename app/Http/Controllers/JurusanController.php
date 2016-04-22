@@ -16,63 +16,63 @@ class JurusanController extends Controller
         return view('jurusan.panel', $pass);
     }
 
+    public function get_datatable()
+    {
+        return $this->make_datatable('App\Jurusan', 1);
+    }
+
+    public function get_details(Request $request)
+    {
+        if ($request->ajax()) {
+            $detail = Jurusan::get_details($request->id);
+
+            return json_encode($detail);
+        } else {
+            abort(404);
+        }
+    }
+
     public function save(Request $request)
     {
-        if(count($request->jurusan['singkat']) != count($request->jurusan['lengkap'])) {
-            if($request->ajax()) {
-                return response('Ada kesalahan dalam input.', 422);
-            } else {
-                return redirect()->route('kelas.jurusan')->with('message', 'Ada kesalahan dalam input.');
-            }
-        }
+        $this->validate($request, [
+            'id' => 'required|min:0',
+            'singkat' => 'required',
+            'lengkap' => 'required'
+        ]);
 
-        $fails = [];
-        
-        foreach($request->jurusan['singkat'] as $k => $v) {
-            if(!$v or count($v) < 0) { next; }
-            
-            if($request->input('baru')[$k] == 1) {
-                $new = new Jurusan();
-            } else {
-                $new = Jurusan::find($k);
-                if(!$new) { $new = new Jurusan(); $new->id = $k; }
-            }
-            $new->singkat = $v;
-            $new->lengkap = $request->jurusan['lengkap'][$k];
-
-            try {
-                $new->save();
-            } catch(\Illuminate\Database\QueryException $e) {
-                $fails[] = "{$request->jurusan['lengkap'][$k]} ({$request->jurusan['singkat'][$k]})";
-            }
-        }
-
-        if(count($fails) == count($request->jurusan['singkat']))
-        {
-            $responseText = "Operasi gagal; tidak ada jurusan yang tersimpan.";
-        }
-        elseif(count($fails) > 0) {
-            $responseText = "Data jurusan berhasil disimpan kecuali jurusan: ";
-            foreach($fails as $f) { $responseText .= "{$f}, "; }
+        if($request->id <= 0) {
+            $new = new Jurusan();
         } else {
-            $responseText = "Jurusan berhasil disimpan.";
+            $new = Jurusan::find($request->id);
+            if(!$new) {
+                return response('Jurusan tidak ditemukan. Coba tambah jurusan baru.', 422);
+            }
         }
 
-        if($request->ajax()) {
-            return response($responseText, 200);
+        $new->singkat = $request->singkat;
+        $new->lengkap = $request->lengkap;
+
+        try {
+            $save = $new->save();
+        } catch(\Illuminate\Database\QueryException $e) {
+            return response('Operasi gagal. Coba cek kembali, mungkin ada kesalahan atau data yang ingin ditambahkan sudah ada.', 422);
+        }
+
+        if ($request->ajax()) {
+            return $request->id == 0 ? 'Data berhasil ditambahkan.' : 'Data berhasil diubah';
         } else {
-            return redirect()->route('kelas.jurusan')->with('message', $responseText);
+            return $request->id == 0 ? redirect()->route('kelas.jurusan')->with('message', 'Data berhasil ditambahkan.') : redirect()->route('kelas.jurusan', ['message', 'Data berhasil diubah.', 'id' => $request->id]);
         }
     }
 
     public function delete(Request $request) {
         $this->validate($request, [
-            'jurusan' => 'required|exists:jurusan,id'
+            'id' => 'required|exists:jurusan,id'
         ]);
 
-        $check = Kelas::where('id_jurusan', $request->jurusan)->count();
+        $check = Kelas::where('id_jurusan', $request->id)->count();
         if($check) {
-            $responseText = "Kelas batal dihapus: ada kelas yang terdaftar dengan jurusan ini.";
+            $responseText = "Jurusan batal dihapus: ada kelas yang terdaftar dengan jurusan ini.";
             if($request->ajax()) {
                 return response($responseText, 422);
             } else {
@@ -82,7 +82,7 @@ class JurusanController extends Controller
 
         $responseText = ""; $responseCode = 0;
 
-        $jurusan = Jurusan::findOrFail($request->jurusan);
+        $jurusan = Jurusan::findOrFail($request->id);
         if($jurusan->delete()) {
             $responseText = "Jurusan berhasil dihapus.";
             $responseCode = 200;

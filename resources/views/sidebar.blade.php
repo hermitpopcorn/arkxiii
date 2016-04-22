@@ -13,6 +13,9 @@
     @include('sidebar_item', ['route' => 'semester', 'icon' => 'calendar', 'label' => 'Semester'])
     @include('sidebar_item', ['route' => 'pengaturan', 'icon' => 'cogs', 'label' => 'Pengaturan'])
     <hr/>
+    @include('sidebar_item', ['route' => 'lama.akhir', 'icon' => 'database', 'label' => 'Data Lama'])
+    @include('sidebar_item', ['route' => 'ralat', 'icon' => 'pencil', 'label' => 'Ralat'])
+    <hr/>
     <a href='{{ route('keluar') }}'><li class="red"><i class="fa fa-power-off"></i>Keluar</li></a>
 </nav>
 <!-- Sidebar end -->

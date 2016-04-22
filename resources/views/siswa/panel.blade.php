@@ -10,6 +10,7 @@
 <div class='navbuttons row'>
     <a class='button' href="{{ route('siswa.tambah') }}"><i class='fa fa-edit'></i> Tambah Data Siswa</a>
     <a class='button' href="{{ route('siswa.upload') }}"><i class='fa fa-upload'></i> Upload Data Siswa</a>
+    <a class='button' href="{{ route('siswa.upload_foto') }}"><i class='fa fa-image'></i> Upload Foto Siswa</a>
 </div>
 
 <h2>Manajemen Siswa</h2>
@@ -41,7 +42,7 @@
 </form>
 <div class='row'>
     <div class='large-12 column'>
-        @include('datatable', ['columns' => ['NIS/NISN', 'Nama', 'Kelas', '&nbsp;']])
+        @include('datatable', ['columns' => ['NIS/NISN', 'Nama', 'Kelas', 'Foto', '&nbsp;']])
     </div>
 </div>
 
@@ -58,4 +59,17 @@
         window.location.href = "{{ route('siswa.hapus', ['id' => '']) }}/" + id;
     }
 </script>
+
+<style>
+img.enlargeable {
+  height:20px;
+  width:auto;
+  -webkit-transition: all 0.5s; /* Safari */
+  transition: all 0.5s
+}
+img.enlargeable:hover {
+  height:100px;
+  width:auto;
+}
+</style>
 @endsection

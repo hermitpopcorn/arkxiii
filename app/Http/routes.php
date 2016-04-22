@@ -23,6 +23,8 @@ Route::group(['as' => 'siswa.'], function() {
     Route::post('siswa/hapus', ['as' => 'hapus.action', 'uses' => 'SiswaController@delete']);
     Route::get('siswa/upload', ['as' => 'upload', 'uses' => 'SiswaController@upload_page']);
     Route::post('siswa/upload', ['as' => 'upload.action', 'uses' => 'SiswaController@upload']);
+    Route::get('siswa/upload/foto', ['as' => 'upload_foto', 'uses' => 'SiswaController@upload_foto_page']);
+    Route::post('siswa/upload/foto', ['as' => 'upload_foto.action', 'uses' => 'SiswaController@upload_foto']);
 
     Route::get('siswa/get-nama', ['as' => 'ajax.get.nama', 'uses' => 'SiswaController@get_nama_from_nis']);
 });
@@ -36,8 +38,10 @@ Route::group(['as' => 'kelas.'], function() {
     Route::post('kelas/set-massal', ['as' => 'ajax.mass', 'uses' => 'KelasController@mass']);
 
     Route::get('kelas/jurusan', ['as' => 'jurusan', 'uses' => 'JurusanController@index']);
-    Route::post('kelas/jurusan/simpan', ['as' => 'jurusan.simpan', 'uses' => 'JurusanController@save']);
-    Route::post('kelas/jurusan/hapus', ['as' => 'jurusan.hapus', 'uses' => 'JurusanController@delete']);
+    Route::get('kelas/jurusan/dt', ['as' => 'jurusan.ajax.datatable', 'uses' => 'JurusanController@get_datatable']);
+    Route::get('kelas/jurusan/detail', ['as' => 'jurusan.ajax.details', 'uses' => 'JurusanController@get_details']);
+    Route::post('kelas/jurusan/simpan', ['as' => 'jurusan.ajax.simpan', 'uses' => 'JurusanController@save']);
+    Route::post('kelas/jurusan/hapus', ['as' => 'jurusan.ajax.hapus', 'uses' => 'JurusanController@delete']);
 });
 
 Route::get('pelajaran', ['as' => 'pelajaran', 'uses' => 'PelajaranController@index']);
@@ -87,7 +91,7 @@ Route::group(['as' =>'nilai.'], function() {
         Route::post('nilai/akhir/simpan', ['as' => 'ajax.simpan', 'uses' => 'NilaiController@save']);
         Route::get('nilai/akhir/detail', ['as' => 'ajax.detail', 'uses' => 'NilaiController@detail']);
     });
-    
+
     Route::get('nilai/sikap', ['as' => 'sikap', 'uses' => 'SikapController@index']);
     Route::group(['as' => 'sikap.'], function() {
         Route::get('nilai/sikap/dt', ['as' => 'ajax.datatable', 'uses' => 'SikapController@datatable']);
@@ -123,7 +127,7 @@ Route::group(['as' =>'nilai.'], function() {
     Route::group(['as' => 'pkl.'], function() {
         Route::get('nilai/pkl/dt', ['as' => 'ajax.datatable', 'uses' => 'PklController@datatable']);
         Route::get('nilai/pkl/dl', ['as' => 'ajax.siswa_datalist', 'uses' => 'PklController@datalist']);
-        Route::get('nilai/pkll/detail', ['as' => 'ajax.detail', 'uses' => 'PklController@detail']);
+        Route::get('nilai/pkl/detail', ['as' => 'ajax.detail', 'uses' => 'PklController@detail']);
         Route::get('nilai/pkl/upload', ['as' => 'upload', 'uses' => 'PklController@upload']);
         Route::post('nilai/pkl/upload', ['as' => 'upload.action', 'uses' => 'PklController@upload_save']);
         Route::post('nilai/pkl/simpan', ['as' => 'ajax.simpan', 'uses' => 'PklController@save']);
@@ -143,5 +147,21 @@ Route::group(['as' =>'absensi.'], function() {
 
 Route::get('pengaturan', ['as' => 'pengaturan', 'uses' => 'PengaturanController@index']);
 Route::post('pengaturan', ['as' => 'pengaturan.simpan', 'uses' => 'PengaturanController@save']);
+
+Route::get('lama/akhir', ['as' => 'lama.akhir', 'uses' => 'DataLamaController@akhir']);
+Route::get('lama/akhir/dt', ['as' => 'lama.akhir.ajax.datatable', 'uses' => 'DataLamaController@akhir_datatable']);
+Route::get('lama/sikap', ['as' => 'lama.sikap', 'uses' => 'DataLamaController@sikap']);
+Route::get('lama/sikap/dt', ['as' => 'lama.sikap.ajax.datatable', 'uses' => 'DataLamaController@sikap_datatable']);
+Route::get('lama/ekskul', ['as' => 'lama.ekskul', 'uses' => 'DataLamaController@ekskul']);
+Route::get('lama/ekskul/dt', ['as' => 'lama.ekskul.ajax.datatable', 'uses' => 'DataLamaController@ekskul_datatable']);
+Route::get('lama/ekskul/dl', ['as' => 'lama.ekskul.ajax.siswa_datalist', 'uses' => 'DataLamaController@ekskul_datalist']);
+Route::get('lama/prestasi', ['as' => 'lama.prestasi', 'uses' => 'DataLamaController@prestasi']);
+Route::get('lama/prestasi/dt', ['as' => 'lama.prestasi.ajax.datatable', 'uses' => 'DataLamaController@prestasi_datatable']);
+Route::get('lama/pkl', ['as' => 'lama.pkl', 'uses' => 'DataLamaController@pkl']);
+Route::get('lama/pkl/dt', ['as' => 'lama.pkl.ajax.datatable', 'uses' => 'DataLamaController@pkl_datatable']);
+Route::get('lama/pkl/dl', ['as' => 'lama.pkl.ajax.datalist', 'uses' => 'DataLamaController@pkl_datalist']);
+
+Route::get('ralat', ['as' => 'ralat', 'uses' => 'RalatController@index']);
+Route::post('ralat', ['as' => 'ralat.action', 'uses' => 'RalatController@ralat']);
 
 Route::get('tentang', ['as' => 'tentang', function () { return view('tentang'); }]); // Halaman tentang (about)

@@ -15,10 +15,10 @@ class SikapController extends Controller
     public function index()
     {
         $pass['kelas_list'] = Kelas::get_daftar_kelas();
-        
+
         return view('nilai.sikap', $pass);
     }
-    
+
     public function datatable(Request $request)
     {
         $this->validate($request, [
@@ -27,34 +27,34 @@ class SikapController extends Controller
 
         return $this->make_datatable('App\NilaiSikap', 2, $request);
     }
-    
+
     public function detail(Request $request)
     {
         if (!$request->ajax()) { abort(404); }
-        
+
         $this->validate($request, [
             'id_siswa' => 'required|exists:siswa,id'
         ]);
-        
+
         $siswa = Siswa::find($request->input('id_siswa'));
-        $nilai = NilaiSikap::get_nilai($request->input('id_siswa'));
-        
+        $nilai = NilaiSikap::get_nilai($request->input('id_siswa'), $request->input('id_semester'));
+
         $detail['sikap'] = $nilai ? $nilai->sikap : '';
-        
+
         $detail = array_merge($detail, ['nis' => $siswa->nis, 'nama' => $siswa->nama]);
-        
+
         return json_encode($detail);
     }
-    
+
     public function save(Request $request)
     {
         $this->validate($request, [
             'nis' => 'required|exists:siswa,nis'
         ]);
-        
+
         $siswa = Siswa::where('nis', $request->input('nis'))->first();
         if(!$siswa) { return response('NIS siswa tidak dapat ditemukan.', 422); }
-        
+
         $created = null;
         $check = NilaiSikap::where('id_siswa', $siswa->id)->where('id_semester', Semester::get_active_semester()->id);
         $old = $check->first();
@@ -62,9 +62,9 @@ class SikapController extends Controller
             $created = $old->created_at;
             $check->delete();
         }
-        
+
         $new = new NilaiSikap();
-        
+
         $new->id_siswa = $siswa->id;
         $new->sikap = $request->input('sikap') ? $request->input('sikap') : '';
         $new->id_semester = Semester::get_active_semester()->id;
@@ -75,21 +75,21 @@ class SikapController extends Controller
         } catch(\Illuminate\Database\QueryException $e) {
             return response('Operasi gagal. Coba cek kembali, mungkin ada kesalahan atau data yang ingin ditambahkan sudah ada.', 422);
         }
-        
+
         if ($request->ajax()) {
             return 'Catatan berhasil ditambahkan.';
         } else {
             return redirect()->route('nilai.sikap')->with('message', 'Catatan berhasil ditambahkan.');
         }
     }
-    
+
     public function upload()
     {
         return view('nilai.sikap_upload');
     }
-    
+
     public function upload_save(Request $request)
-    {           
+    {
         $this->validate($request, [
             'excel' => 'required'
         ]);
@@ -100,14 +100,14 @@ class SikapController extends Controller
             $objReader = PHPExcel_IOFactory::createReader($inputFileType);
             $objPHPExcel = $objReader->load($inputFileName);
         } catch (Exception $e) {
-            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) 
+            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME)
             . '": ' . $e->getMessage());
         }
 
         $data_count = 0;
         $errors = 0;
         $semester = Semester::get_active_semester()->id;
-            
+
         foreach ($objPHPExcel->getWorksheetIterator() as $sheet) {
             $highestRow = $sheet->getHighestRow();
             $highestColumn = $sheet->getHighestColumn();
@@ -132,11 +132,11 @@ class SikapController extends Controller
                         if(!$siswa) { $errors++; $id_siswa = null; continue; }
                         $id_siswa = $siswa->id;
                     }
-                    
+
                     if(!$id_siswa) { continue; }
-                    
+
                     $new = new NilaiSikap();
-                    
+
                     $created = null;
                     $check = NilaiSikap::where('id_siswa', $id_siswa)->where('id_semester', $semester);
                     $old = $check->first();

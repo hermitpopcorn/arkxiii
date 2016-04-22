@@ -77,7 +77,7 @@ class SiswaController extends Controller
         } else {
             $new = Siswa::find($request->id);
         }
-        
+
         if($request->id_kelas != null) {
             $c = Kelas::find($request->id_kelas);
             if(!$c) { return "ID kelas tidak ditemukan."; }
@@ -126,10 +126,10 @@ class SiswaController extends Controller
     public function upload_page()
     {
         $pass['kelas_list'] = Kelas::get_daftar_kelas();
-        
+
         return view('siswa.upload', $pass);
     }
-    
+
     public function upload(Request $request)
     {
         $this->validate($request, [
@@ -143,19 +143,19 @@ class SiswaController extends Controller
             $objReader = PHPExcel_IOFactory::createReader($inputFileType);
             $objPHPExcel = $objReader->load($inputFileName);
         } catch (Exception $e) {
-            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) 
+            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME)
             . '": ' . $e->getMessage());
         }
 
         $data_count = 0;
         $errors = 0;
-            
+
         foreach ($objPHPExcel->getWorksheetIterator() as $sheet) {
             $highestRow = $sheet->getHighestRow();
             $highestColumn = $sheet->getHighestColumn();
 
             $start = false;
-            
+
             $id_kelas = $request->input('id_kelas');
 
             for ($row = 1; $row <= $highestRow; $row++) {
@@ -164,26 +164,26 @@ class SiswaController extends Controller
                 if(!$start) {
                     // Start check
                     if($rowData[0][0] == "1" || $rowData[0][0] == "1.") { $start = true; }
-                    
+
                     // Kelas set
                     foreach($rowData[0] as $colNum => $colVal) {
                         if(strpos(strtolower($colVal), 'kelas:') !== FALSE) {
                             $kcheck = explode(" ", $rowData[0][$colNum+1]);
                             if(count($kcheck) < 3) { continue; }
-                            
+
                             $kc_kelas = array_pop($kcheck);
-                            
+
                             $kc_tingkat = array_shift($kcheck);
                             if(!is_numeric($kc_tingkat)) {
                                 $kc_tingkat = array('X' => 1, 'XI' => 2, 'XII' => 3, 'XIV' => 4)[$kc_tingkat];
                             }
-                            
+
                             $kc_jurusan = strtolower(implode(" ", $kcheck));
-                            
+
                             $jc = Jurusan::whereRaw("LOWER(lengkap) LIKE '{$kc_jurusan}'")->orWhereRaw("LOWER(singkat) LIKE '{$kc_jurusan}'")->first();
                             if(!$jc) { continue; }
                             $kc_jurusan = $jc->id;
-                            
+
                             $c = Kelas::where('tingkat', $kc_tingkat)->where('kelas', $kc_kelas)->where('id_jurusan', $kc_jurusan)->first();
                             if($c) { $id_kelas = $c->id; }
                         }
@@ -200,9 +200,9 @@ class SiswaController extends Controller
                         if($siswa) { $siswa = Siswa::find($siswa->id); }
                         else { $siswa = new Siswa(); }
                     }
-                    
+
                     if(!$siswa) { $errors++; continue; }
-                    
+
                     $siswa->nis = $rowData[0][1];
                     $siswa->nisn = $rowData[0][2];
                     $siswa->nama = $rowData[0][3];
@@ -242,6 +242,46 @@ class SiswaController extends Controller
 
         $message = "Upload file selesai. Terbaca ada {$data_count} data. ";
         $message .= (($errors > 0) ? "Ada masalah dengan {$errors} data, dan tidak dapat dimasukkan ke dalam database." : "Semua data berhasil ditambahkan." );
+
+        return redirect()->route('siswa')->with('message', $message);
+    }
+
+    public function upload_foto_page()
+    {
+        return view('siswa.upload_foto');
+    }
+
+    public function upload_foto(Request $request)
+    {
+        $fotos = $request->foto;
+
+        $errors = 0;
+        $data_count = 0;
+        foreach($fotos as $foto) {
+            $data_count++;
+            if(exif_imagetype($foto) == IMAGETYPE_PNG) {
+                $image = imagecreatefrompng($foto);
+            } elseif(exif_imagetype($foto) == IMAGETYPE_JPEG) {
+                $image = imagecreatefromjpeg($foto);
+            } elseif(exif_imagetype($foto) == IMAGETYPE_BMP) {
+                $image = imagecreatefromwbmp($foto);
+            } else {
+                $errors++;
+                continue;
+            }
+
+            $nis = rtrim($foto->getClientOriginalName(), '.'.$foto->getClientOriginalExtension());
+            $check = Siswa::where('nis', $nis)->first();
+            if($check) {
+                imagejpeg($image, base_path('resources/assets/images/pasfotosiswa/'.$nis.'.jpg'));
+            } else {
+                $errors++;
+            }
+            imagedestroy($image);
+        }
+
+        $message = "Upload file selesai. {$data_count} file terbaca. ";
+        $message .= (($errors > 0) ? "{$errors} file gagal di-upload." : "Semua file berhasil diupload." );
 
         return redirect()->route('siswa')->with('message', $message);
     }

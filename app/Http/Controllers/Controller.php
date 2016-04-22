@@ -14,11 +14,11 @@ abstract class Controller extends BaseController
 
     /**
      * Mengambil data untuk datatable dari model.
-     * 
+     *
      * @param  string   $class       nama kelas (misal App\Guru) dari model
      * @param  integer  $button_type tipe button untuk di tabel (untuk jelasnya lihat fungsi tablifty)
      * @param  Request  $request     obyek Request yang berisi isian form
-     * 
+     *
      * @return array                 array berisi string tabel ('data') dan nomor halaman ('pagination')
      */
     public function make_datatable($class, $button_type = 0, $request = null)
@@ -43,7 +43,7 @@ abstract class Controller extends BaseController
      * @param array $data        hasil query
      * @param bool  $button_type 0: tanpa ada tombol apapun
      *                           1: tambahkan button "edit" dan "hapus"
-     *                           2: tambahkan button "pilih" 
+     *                           2: tambahkan button "pilih"
      *
      * @return string            string yang bisa dimasukkan ke tbody datatable
      */
@@ -66,7 +66,7 @@ abstract class Controller extends BaseController
                     $selector = explode(',', $val);
                     foreach($selector as $k => $s) { $selector[$k] = htmlspecialchars((json_encode($s))); }
                     $selector = implode(',', $selector);
-                    
+
                     if ($button_type == 1) {
                         $tbody .= '<a href="javascript:edit('.$selector.')" class="nobr"><i class="fa fa-pencil"></i> Edit</a>';
                         $tbody .= ' &bull; ';
@@ -74,13 +74,21 @@ abstract class Controller extends BaseController
                     } elseif ($button_type == 2) {
                         $tbody .= '<span class="nobr">[ <a href="javascript:pilih('.$selector.')">Pilih</a> ]</span>';
                     }
+                } elseif($col == 'foto') {
+                    $foto = file_exists(base_path('resources/assets/images/pasfotosiswa/'.$val.'.jpg'));
+                    if($foto) {
+                      $foto = base64_encode(file_get_contents(base_path('resources/assets/images/pasfotosiswa/'.$val.'.jpg')));
+                      $tbody .= "<a href='data:image/jpeg;base64,{$foto}' target='_blank'><img class='enlargeable' src='data:image/jpeg;base64,{$foto}' /></a>";
+                    } else {
+                      $tbody .= 'Belum ada';
+                    }
                 } else {
                     $tbody .= str_limit(($col == 'check' ? $val : htmlspecialchars($val)), 64);
                 }
                 $tbody .= '</td>';
             }
             $tbody .= '</tr>';
-            
+
             $count++;
         }
 

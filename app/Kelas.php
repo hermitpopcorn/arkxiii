@@ -40,7 +40,7 @@ class Kelas extends MasterModel
         return $q->orderBy('kelas.angkatan', 'DESC')->orderBy('kelas.id_jurusan', 'ASC')->orderBy('kelas.kelas', 'ASC');
     }
 
-    public static function get_daftar_kelas($upto = 3)
+    public static function get_daftar_kelas($upto = 3, $use_separator = true)
     {
         $q = self::select(DB::raw("kelas.id as `id`,
                 CONCAT_WS(' ',
@@ -72,7 +72,7 @@ class Kelas extends MasterModel
                 ->orderBy('kelas.angkatan', 'desc')
                 ->get();
             if($q2->count() > 0) {
-                $q = $q->merge($separator);
+                if($use_separator) { $q = $q->merge($separator); }
                 $q = $q->merge($q2);
             }
         }
@@ -83,7 +83,7 @@ class Kelas extends MasterModel
     {
         return ['total' => self::where('tingkat', '1')->get()->count(), 'jurusan' => Jurusan::all()->count(), 'count' => self::select(DB::raw('count(*)'))->where('kelas.tingkat', '1')->groupBy('kelas.id_jurusan')->get()->count() ];
     }
-    
+
     public function get_wali_kelas() {
         $g = Mengajar::join('mapel', 'mengajar.id_mapel', '=', 'mapel.id')
             ->where('mengajar.id_kelas', $this->id)

@@ -43,24 +43,24 @@ class EkskulController extends Controller
 
         return ['data' => $tbody, 'ekstrakurikuler' => $request->input('ekstrakurikuler')];
     }
-    
+
     public function detail(Request $request)
     {
         if (!$request->ajax()) { abort(404); }
-        
+
         $this->validate($request, [
             'id_siswa' => 'required|exists:siswa,id',
             'ekstrakurikuler' => 'required'
         ]);
-        
+
         $siswa = Siswa::find($request->input('id_siswa'));
-        $nilai = Ekskul::get_nilai($request->input('id_siswa'), $request->input('ekstrakurikuler'));
-        
+        $nilai = Ekskul::get_nilai($request->input('id_siswa'), $request->input('ekstrakurikuler'), $request->input('id_semester'));
+
         $detail['ekstrakurikuler'] = $nilai ? $nilai->ekstrakurikuler : '';
         $detail['nilai'] = $nilai ? $nilai->nilai : '';
-        
+
         $detail = array_merge($detail, ['nis' => $siswa->nis, 'nama' => $siswa->nama]);
-        
+
         return json_encode($detail);
     }
 
@@ -84,7 +84,7 @@ class EkskulController extends Controller
         }
 
         $new = new Ekskul();
-        
+
         $new->ekstrakurikuler = $request->input('ekstrakurikuler');
         $new->id_siswa = $siswa->id;
         $new->nilai = $request->input('nilai');
@@ -146,7 +146,7 @@ class EkskulController extends Controller
             $objReader = PHPExcel_IOFactory::createReader($inputFileType);
             $objPHPExcel = $objReader->load($inputFileName);
         } catch (Exception $e) {
-            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) 
+            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME)
             . '": ' . $e->getMessage());
         }
 
@@ -184,7 +184,7 @@ class EkskulController extends Controller
                 } else {
                     if($id_siswa == null) { continue; }
                 }
-                
+
                 $created = null;
                 $check = Ekskul::where('ekstrakurikuler', $rowData[0][3])->where('id_siswa', $id_siswa)->where('id_semester', $semester);
                 $old = $check->first();

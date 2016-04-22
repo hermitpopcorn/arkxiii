@@ -183,6 +183,7 @@
             $("#formPrestasi input#nama").val(r.nama);
             $("#formPrestasi input[name=prestasi]").val(r.prestasi);
             $("#formPrestasi input[name=keterangan]").val(r.keterangan);
+            $("html, body").animate({ scrollTop: $("form#formPrestasi").offset().top }, "slow");
         });
     }
 
