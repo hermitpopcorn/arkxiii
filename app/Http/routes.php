@@ -138,11 +138,11 @@ Route::group(['as' =>'nilai.'], function() {
 
 Route::get('absensi', ['as' => 'absensi', 'uses' => 'AbsensiController@index']);
 Route::group(['as' =>'absensi.'], function() {
-    Route::get('absensi/dt', ['as' => 'ajax.datatable', 'uses' => 'AbsenSicontroller@datatable']);
-    Route::get('absensi/upload', ['as' => 'upload', 'uses' => 'AbsenSicontroller@upload']);
-    Route::post('absensi/upload', ['as' => 'upload.action', 'uses' => 'AbsenSicontroller@upload_save']);
-    Route::post('absensi/simpan', ['as' => 'ajax.simpan', 'uses' => 'AbsenSicontroller@save']);
-    Route::get('absensi/detail', ['as' => 'ajax.detail', 'uses' => 'AbsenSicontroller@detail']);
+    Route::get('absensi/dt', ['as' => 'ajax.datatable', 'uses' => 'AbsensiController@datatable']);
+    Route::get('absensi/upload', ['as' => 'upload', 'uses' => 'AbsensiController@upload']);
+    Route::post('absensi/upload', ['as' => 'upload.action', 'uses' => 'AbsensiController@upload_save']);
+    Route::post('absensi/simpan', ['as' => 'ajax.simpan', 'uses' => 'AbsensiController@save']);
+    Route::get('absensi/detail', ['as' => 'ajax.detail', 'uses' => 'AbsensiController@detail']);
 });
 
 Route::get('pengaturan', ['as' => 'pengaturan', 'uses' => 'PengaturanController@index']);
